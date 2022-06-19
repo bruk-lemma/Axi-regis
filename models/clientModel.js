@@ -35,7 +35,7 @@ const clientSchema=new mongoose.Schema({
     },
     createdAt:{
         type:Date,
-        default:Date.now().toPrecision
+        default:Date.now()
     } 
   });
 const Client=mongoose.model('Client',clientSchema);

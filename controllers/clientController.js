@@ -2,7 +2,12 @@ const Client = require('../models/clientModel');
 exports.getAllClients = async(req, res) => {
  // console.log(req.requestTime);
  try{
- const Clients=await Client.find();
+  const queryObj={...req.query};
+  const excludeFields=['page','sort','limit','fields'];
+  excludeFields.forEach(el => delete queryObj[el]);
+
+  const query=Client.find(queryObj);
+  const Clients=await query;
   res.status(200).json({
     status: 'success',
     requestedAt: req.requestTime,
@@ -13,7 +18,7 @@ exports.getAllClients = async(req, res) => {
   });
 }catch (err){
   res.status(400).json({
-    status:fail,
+    status:'fail',
     message: `Error ${err}`
   });
 }
