@@ -80,9 +80,16 @@ exports.updateClient = async (req, res) => {
  }
 };
 
-exports.deleteClient = (req, res) => {
+exports.deleteClient = async(req, res) => {
+  try{
+    const Deleted_Client=await Client.findByIdAndDelete(req.params.id);
   res.status(204).json({
-    status: 'success',
+    messahge: "Client Deleted",
     data: null
   });
+}catch (err){
+  res.status(400).json({
+    message: err
+  });
+}
 };
