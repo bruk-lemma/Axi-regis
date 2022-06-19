@@ -1,5 +1,4 @@
 const Client = require('../models/clientModel');
-//const Client=require('../models/clientModel');
 exports.getAllClients = async(req, res) => {
  // console.log(req.requestTime);
  try{
@@ -64,13 +63,21 @@ try{
 }
   
 
-exports.updateClient = (req, res) => {
+exports.updateClient = async (req, res) => {
+ try{
+  const Updated_Client=await Client.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
   res.status(200).json({
     status: 'success',
     data: {
-      tour: '<Updated tour here...>'
+      Client:  Updated_Client
     }
   });
+ }catch (err){
+  res.status(400).json({
+    status: 'fail',
+    message:`error is ${err}`
+  });
+ }
 };
 
 exports.deleteClient = (req, res) => {
