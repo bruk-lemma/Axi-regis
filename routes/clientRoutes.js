@@ -3,12 +3,12 @@ const clientController = require('../controllers/clientController');
 
 const router = express.Router();
 
-router.param('id', clientController.checkID);
+//router.param('id', clientController.checkID);
 
 router
   .route('/')
   .get(clientController.getAllClients)
-  .post(clientController.checkBody, clientController.createClient);
+  .post(clientController.createClient);
 
 router
   .route('/:id')

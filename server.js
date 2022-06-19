@@ -18,37 +18,7 @@ mongoose
   //console.log(con.connections);
   console.log("DATABASE connection successfull!....");
 });
-
-const clientSchema=new mongoose.Schema({
-  first_name:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-  last_name:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-  address:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-  phone_number:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-  child_grade:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-  child_gender:{
-    type:String,
-    require:[true,"A client must have a first-name"]
-  },
-});
-
-
-const Client=mongoose.model('Client',clientSchema);
-const testClient=new Client({
+/*const testClient=new Client({
   first_name:"Amdom",
   last_name:"gkidan",
   address:"Moenko motors",
@@ -62,6 +32,7 @@ testClient.save().then(doc=>{
 }).catch(err=>{
   console.log(`Error...${err}`);
 });
+*/
 //console.log(process.env);
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
