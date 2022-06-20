@@ -7,7 +7,7 @@ exports.getAllClients = async(req, res) => {
   excludeFields.forEach(el => delete queryObj[el]);
 
   ///let query=Client.find(JSON.parse(quer)) 
-
+//sorting
   let query=Client.find(queryObj);
   if(req.query.sort){
     const sortBy=req.query.sort.split(",").join(" ");
@@ -15,6 +15,15 @@ exports.getAllClients = async(req, res) => {
   }else{
     query=query.sort('-createdAt');
   }
+
+  //Limiting fields
+if(req.query.fields){
+  const fields=req.query.fields.split(',').join(' ');
+  query=query.select(fields);
+}else{
+  query=query.select('-__v');
+}
+
   const Clients=await query;
   res.status(200).json({
     status: 'success',
