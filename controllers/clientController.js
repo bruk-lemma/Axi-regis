@@ -1,42 +1,11 @@
 const Client = require('../models/clientModel');
+const APIFeatures=require('../utils/apiFeatures');
 exports.getAllClients = async(req, res) => {
  // console.log(req.requestTime);
  try{
-  const queryObj={...req.query};
-  const excludeFields=['page','sort','limit','fields'];
-  excludeFields.forEach(el => delete queryObj[el]);
+const features=new APIFeatures(Client.find(),req.query).filter().sort().limitFields().pagination();
 
-  ///let query=Client.find(JSON.parse(quer)) 
-//sorting
-  let query=Client.find(queryObj);
-  if(req.query.sort){
-    const sortBy=req.query.sort.split(",").join(" ");
-    query=query.sort(sortBy)
-  }else{
-    query=query.sort('-createdAt');
-  }
-
-  //Limiting fields
-if(req.query.fields){
-  const fields=req.query.fields.split(',').join(' ');
-  query=query.select(fields);
-}else{
-  query=query.select('-__v');
-}
-
-//pagination
-const page=req.query.page * 1 || 1;
-const limit=req.query.limit *1 || 100;
-const skip=(page - 1)*limit;
-
-query=query.skip(skip).limit(limit);
-
-if(req.query.page){
-  const numClients=await Client.countDocuments();
-  if(skip >= numClients) throw new Error("This page does not exist");
-}
-
-  const Clients=await query;
+  const Clients=await features.query;
   res.status(200).json({
     status: 'success',
     requestedAt: req.requestTime,
@@ -50,6 +19,7 @@ if(req.query.page){
     status:'fail',
     message: `Error ${err}`
   });
+  console.log(err);
 }
 };
 
