@@ -97,3 +97,30 @@ exports.deleteClient = async(req, res) => {
   });
 }
 };
+
+exports.getClientStats=async(req,res)=>{
+  try{
+    const stat= await Client.aggregate([
+      {
+        $match:{child_grade:{$eq:"middleschool"}}
+      },
+      {
+        $group:{
+          _id:"address",
+          address:{$first:'gerji'}
+        }
+      }
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        Client: stat
+      }
+    });
+  }catch (err){
+    res.status(404).json({
+      status:'fail',
+      message:err.message
+    })
+  }
+};
