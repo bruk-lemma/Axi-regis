@@ -66,7 +66,6 @@ try{
       
 }
   
-
 exports.updateClient = async (req, res) => {
  try{
   const Updated_Client=await Client.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});

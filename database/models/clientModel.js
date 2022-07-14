@@ -14,7 +14,7 @@ const clientSchema=new mongoose.Schema({
     },
     address:{
       type:String,
-      required:[true,"A client must have a address"],
+      required:[true,"A client must have an address"],
       trim:true
 
     },
@@ -38,7 +38,8 @@ const clientSchema=new mongoose.Schema({
         default:Date.now(),
         select:false
     } 
-  },{toJSON:{virtuals:true},toObject:{virtuals:true}});
+  },
+  {toJSON:{virtuals:true},toObject:{virtuals:true}});
 clientSchema.virtual('duration').get(function(){
   return this.address;
 });  
