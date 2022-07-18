@@ -1,5 +1,6 @@
 const express = require('express');
 const clientController = require('../controllers/clientController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -7,11 +8,10 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(clientController.getAllClients)
+  .get(authController.protect,clientController.getAllClients)
   .post(clientController.createClient);
   
 router.route('/client-stat').get(clientController.getClientStats);
-
 router
   .route('/:id')
   .get(clientController.getClient)

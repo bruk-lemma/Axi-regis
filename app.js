@@ -3,7 +3,7 @@ const morgan = require('morgan');
 
 const clientRouter = require('./routes/clientRoutes');
 const teacherRouter = require('./routes/teacherRoutes');
-
+const userRouter=require("./routes/userRoutes");
 const app = express();
 
 // 1) MIDDLEWARES
@@ -27,5 +27,7 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/api/v1/clients', clientRouter);
 app.use('/api/v1/teachers', teacherRouter);
+app.use('/api/v1/users', userRouter);
+
 
 module.exports = app;
