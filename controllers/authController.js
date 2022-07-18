@@ -1,3 +1,4 @@
+const {promisify}=require("util");
 const jwt=require('jsonwebtoken');
 const User=require('../models/userModel');
 const AppError=require('./../utils/appError');
@@ -16,7 +17,8 @@ exports.signUp=async (req,res)=>{
             name:req.body.name,
             email:req.body.email,
             password:req.body.password,
-            passwordconfirm:req.body.passwordconfirm
+            passwordconfirm:req.body.passwordconfirm,
+            passwordChangedAt:req.body.passwordChangedAt
         });
 const  token=signToken(newUser._id);    
         res.status(201).json({
@@ -74,10 +76,29 @@ let token;
 if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
     token=req.headers.authorization.split(' ')[1];
 }
-console.log(token);
+//console.log(token);
 if(!token){
     return next(new AppError("you are not loged in please log in to ur account...!",401));
 }
 
+//2 verification of the token
+
+const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET);
+//console.log(decoded);
+
+//3 check if user still exists
+const freshUser=await User.findById(decoded.id);
+if(!freshUser){
+    return next(new AppError("the user belonging to this token no longer exists.",401));
+}
+
+//4 check if user changed password after token was issued.
+
+if(freshUser.changedPasswordAfter(decoded.iat)){
+    return next(new AppError("User recently chnaged password please log in again..!",401));
+}
+
+//Grant Access to protected route..
+req.user=freshUser;
 next();
 });
