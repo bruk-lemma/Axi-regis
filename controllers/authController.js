@@ -18,7 +18,8 @@ exports.signUp=async (req,res)=>{
             email:req.body.email,
             password:req.body.password,
             passwordconfirm:req.body.passwordconfirm,
-            passwordChangedAt:req.body.passwordChangedAt
+            passwordChangedAt:req.body.passwordChangedAt,
+            role:req.body.role
         });
 const  token=signToken(newUser._id);    
         res.status(201).json({
@@ -102,3 +103,14 @@ if(freshUser.changedPasswordAfter(decoded.iat)){
 req.user=freshUser;
 next();
 });
+
+exports.restrictTo=(...roles)=>{
+    return (req,res,next)=>{
+        if(!roles.includes(req.user.role)){
+            return next(
+                new AppError("you dont have permission to perform thos action",403)
+            );
+        }
+        next();
+    }
+};

@@ -1,5 +1,6 @@
 const Client = require('../models/clientModel');
 const APIFeatures=require('../utils/apiFeatures');
+const protect=require("./authController");
 exports.getAllClients = async(req, res) => {
  // console.log(req.requestTime);
  try{

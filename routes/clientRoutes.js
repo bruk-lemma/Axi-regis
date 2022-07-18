@@ -16,6 +16,6 @@ router
   .route('/:id')
   .get(clientController.getClient)
   .patch(clientController.updateClient)
-  .delete(clientController.deleteClient);
+  .delete(authController.protect,authController.restrictTo("admin"),clientController.deleteClient);
 
 module.exports = router;
