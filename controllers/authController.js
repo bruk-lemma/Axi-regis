@@ -3,6 +3,7 @@ const jwt=require('jsonwebtoken');
 const User=require('../models/userModel');
 const AppError=require('./../utils/appError');
 const catchAsync=require("../utils/catchAsync");
+const sendEmail=require("../utils/email");
 
 const signToken=id=>{
     return jwt.sign({id},process.env.JWT_SECRET,{
@@ -99,7 +100,7 @@ if(freshUser.changedPasswordAfter(decoded.iat)){
     return next(new AppError("User recently chnaged password please log in again..!",401));
 }
 
-//Grant Access to protected route..
+//Grant Access to protected route...very important for the next step protecting certain routes from unautorized users.
 req.user=freshUser;
 next();
 });
@@ -113,4 +114,44 @@ exports.restrictTo=(...roles)=>{
         }
         next();
     }
+};
+
+exports.forgetPassword=async (req,res,next)=>{
+//1) get user based on the posted email
+const user=await User.findOne({email:req.body.email});
+if(!user){
+    return next(new AppError("There is no user with this email address",404));
+}
+  
+//2) generate the random reset token 
+                     
+const resetoken=user.createPasswordResetToken();
+user.save({validateBeforeSave:false});
+
+//3) send it to user's email
+
+const resetURL=`${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetoken}`;
+const message=`Forgot your password? submit a patch request with your new password and passwordConfirm to: ${resetURL}.\n if you didn't forget your password, please ignore this email!!`;
+
+try{
+await sendEmail({
+    email:user.email,
+    subject:"Your password reset token (valid for 10 min)",
+    message
+});
+
+res.status(200).json({
+    status:"sucesss",
+    message:"Token sent to email"
+});
+}catch(err){
+    user.passwordResetToken=undefined;
+    user.passwordresetExpires=undefined;
+    await user.save({validateBeforeSave:false});
+    return next(new AppError("There was an error sending the email. Try again later!",500)); 
+}
+};
+
+exports.resetpassword=()=>{
+
 };

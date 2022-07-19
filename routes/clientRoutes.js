@@ -11,6 +11,8 @@ router
   .get(authController.protect,clientController.getAllClients)
   .post(clientController.createClient);
   
+
+
 router.route('/client-stat').get(clientController.getClientStats);
 router
   .route('/:id')

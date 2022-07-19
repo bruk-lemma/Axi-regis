@@ -45,7 +45,7 @@ const teacherSchema=new mongoose.Schema({
         select:false
     } 
   },{toJSON:{virtuals:true},toObject:{virtuals:true}});
-  clientSchema.virtual('duration').get(function(){
+  teacherSchema.virtual('duration').get(function(){
   return this.address;
 });  
 const Teacher=mongoose.model('Teacher',teacherSchema);
