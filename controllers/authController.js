@@ -181,3 +181,24 @@ token
 });
 });
 
+exports.updatePassword=catchAsync(async (req,res,next)=>{
+    //1) get user from collection
+const user=await User.findById(req.user.id).select("+password");
+ 
+    //2) check if POSTED current password is correct
+
+if(!(await user.correctPassword(req.body.passwordcurrent,user.password))){
+    return next(new AppError("Your current password is wrong",401))
+}
+    //3) if so, update password
+user.password=req.body.password;
+user.passwordconfirm=req.body.passwordconfirm;
+await user.save();
+    //4) log user in,send jwt 
+ res.status(200).json({
+    status:"success",
+    
+ });   
+
+
+});

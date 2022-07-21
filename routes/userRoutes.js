@@ -1,6 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/authController');
-
+const userController=require('../controllers/userController');
 const router = express.Router();
 
 
@@ -17,5 +17,10 @@ router
 router
 .route("/resetpassword/:token")
 .patch(authController.resetpassword);  
- 
+router
+.route("/updatemypassword")
+.patch(authController.protect,authController.updatePassword);  
+router
+.route("/updateme")
+.patch(authController.protect,userController.updateMe);
 module.exports = router;
