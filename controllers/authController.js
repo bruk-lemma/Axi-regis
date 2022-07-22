@@ -13,8 +13,32 @@ const signToken=id=>{
     });
 };
 
-exports.signUp=async (req,res)=>{
-    try{
+
+const createSendToken=(user,statusCode,res)=>{
+    const token=signToken(user._id);
+    const cookieOpions={
+        expires:new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN*24*60*60*1000),
+      //  secure:true,
+        httpOnly:true
+    };
+    if(process.env.NODE_ENV === "production") cookieOpions.secure=true; 
+    res.cookie('jwt',token,cookieOpions); 
+    
+    //remove password from output
+    user.password=undefined;
+    
+    res.status(statusCode).json({
+        status:"success",
+        token,
+        data:{
+            user
+        },
+        
+    });
+};
+
+exports.signUp=catchAsync(async (req,res)=>{
+   // try{
         //const newUser=await user.create(req.body);
         const newUser=await User.create({
             name:req.body.name,
@@ -24,6 +48,7 @@ exports.signUp=async (req,res)=>{
             passwordChangedAt:req.body.passwordChangedAt,
             role:req.body.role
         });
+        /*
 const  token=signToken(newUser._id);    
         res.status(201).json({
         status:"success",
@@ -39,11 +64,13 @@ const  token=signToken(newUser._id);
         message:`Error ${err}`
     });
     }
+    */
+   createSendToken(newUser,201,res);
    
-};
+});
 
-exports.login=async (req,res,next)=>{
-    try{
+exports.login=catchAsync(async (req,res,next)=>{
+    //try{
     const {email,password}=req.body;
 
     //1, check if email and password exists
@@ -60,8 +87,9 @@ exports.login=async (req,res,next)=>{
         return next(new AppError("incorrect email or password",400));
      }
     //3,  if everything is ok,send token to client
-    const token=signToken(user._id);
-    res.status(200).json({
+   // const token=signToken(user._id);
+    createSendToken(user,200,req,res);
+    /*res.status(200).json({
         status:"Successfully loged in",
         token,
         user:user.name
@@ -71,8 +99,8 @@ exports.login=async (req,res,next)=>{
             status:"failed",
             message:`ERROR ${err}`
         })
-    }
-}; 
+    }*/
+}); 
 
 exports.protect=catchAsync(async(req,res,next)=>{
     //1 getting token and check if its there

@@ -3,6 +3,22 @@ const catchAsync=require("../utils/catchAsync");
 const AppError=require("../utils/appError");
 
 
+
+
+exports.getAllUsers=catchAsync(async(req,res,next)=>{
+    allUsers=await User.find();
+  try{  res.status(200).json({
+        status:"Success",
+        users:allUsers
+    });
+}catch(err){
+    res.status(404).json({
+        status:"Failed",
+        message:`ERROR ${err}`
+    });
+}
+});
+
 exports.updateMe=catchAsync(async(req,res,next)=>{
 const filterObj=(obj,...allowedFields)=>{
     const newObj={};
@@ -32,4 +48,13 @@ const filterObj=(obj,...allowedFields)=>{
         }
     });
 
+});
+
+exports.deleteMe=catchAsync(async(req,res,next)=>{
+    await User.findByIdAndUpdate(req.user.id,{active:false})
+
+    res.status(204).json({
+        status:"success",
+        data:null
+    });
 });

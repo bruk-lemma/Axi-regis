@@ -23,4 +23,13 @@ router
 router
 .route("/updateme")
 .patch(authController.protect,userController.updateMe);
+
+router
+.route("/deleteme")
+.delete(authController.protect,userController.deleteMe);
+
+router
+.route("/")
+.get(authController.protect,userController.getAllUsers);
+
 module.exports = router;
