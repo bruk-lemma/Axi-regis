@@ -6,7 +6,6 @@ const AppError=require('./../utils/appError');
 const catchAsync=require("../utils/catchAsync");
 const sendEmail=require("../utils/email");
 
-
 const signToken=id=>{
     return jwt.sign({id},process.env.JWT_SECRET,{
         expiresIn:process.env.JWT_EXPIRES_IN
@@ -16,13 +15,13 @@ const signToken=id=>{
 
 const createSendToken=(user,statusCode,res)=>{
     const token=signToken(user._id);
-    const cookieOpions={
+    const cookieOptions={
         expires:new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN*24*60*60*1000),
       //  secure:true,
         httpOnly:true
     };
-    if(process.env.NODE_ENV === "production") cookieOpions.secure=true; 
-    res.cookie('jwt',token,cookieOpions); 
+    if(process.env.NODE_ENV === "production") cookieOptions.secure=true; 
+    res.cookie('jwt',token,cookieOptions); 
     
     //remove password from output
     user.password=undefined;
@@ -32,7 +31,7 @@ const createSendToken=(user,statusCode,res)=>{
         token,
         data:{
             user
-        },
+        }
         
     });
 };
@@ -88,7 +87,7 @@ exports.login=catchAsync(async (req,res,next)=>{
      }
     //3,  if everything is ok,send token to client
    // const token=signToken(user._id);
-    createSendToken(user,200,req,res);
+    createSendToken(user,200,res);
     /*res.status(200).json({
         status:"Successfully loged in",
         token,
@@ -225,7 +224,6 @@ await user.save();
     //4) log user in,send jwt 
  res.status(200).json({
     status:"success",
-    
  });   
 
 
