@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const rateLimit=require("express-rate-limit");
 const helmet=require("helmet"); 
 const mongoSanitize=require('express-mongo-sanitize');
+const hpp=require('hpp');
 const xss=require("xss-clean");
 const clientRouter = require('./routes/clientRoutes');
 const teacherRouter = require('./routes/teacherRoutes');
@@ -22,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 
 
 const limiter=rateLimit({
-  max:3,
+  max:30,
   windowMs:60*60*1000,
   message:"To many requests from this IP, please try again in an hour"
 });
@@ -30,12 +31,17 @@ const limiter=rateLimit({
 app.use("/api",limiter);
 app.use(express.json({limit:'10kb'}));
 
-//data sanitization against no-sql query injection
+//data sanitization against no-sql query injection against  no-sql injection
 app.use(mongoSanitize());
 
 
-//data sanitization against XSS 
+//data sanitization against XSS against melicious html code 
 app.use(xss());
+
+//prvent against parameter pollution
+app.use(hpp({
+  whitelist:['address','child_grade']
+}));
 
 app.use(express.static(`${__dirname}/public`));
 
